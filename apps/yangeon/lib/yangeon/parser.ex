@@ -63,10 +63,6 @@ defmodule Yangeon.Parser do
 
   defp parse_maze(maze_lines, rows, cols) do
     map = lines_to_map(maze_lines)
-    # IO.inspect("#{map[{0,0}]}#{map[{0,1}]}#{map[{0,2}]}#{map[{0,3}]}")
-    # IO.inspect("#{map[{1,0}]}#{map[{1,1}]}#{map[{1,2}]}#{map[{1,3}]}")
-    # IO.inspect("#{map[{2,0}]}#{map[{2,1}]}#{map[{2,2}]}#{map[{2,3}]}")
-    # IO.inspect("#{map[{3,0}]}#{map[{3,1}]}#{map[{3,2}]}#{map[{3,3}]}")
     conns_and_links = for r <- 0 .. rows - 1 do
       for c <- 0 .. cols - 1 do
         {rigth_conn, right_link} = if c < cols - 1 do
@@ -98,7 +94,7 @@ defmodule Yangeon.Parser do
     grid =
       conns_and_links
       |> List.flatten()
-      |> Enum.reduce(Grid.new(), fn {conns, links}, grid ->
+      |> Enum.reduce(Grid.new(rows, cols), fn {conns, links}, grid ->
         g1 =
           conns
           |> Enum.reduce(grid, fn {c1, c2}, grid ->
