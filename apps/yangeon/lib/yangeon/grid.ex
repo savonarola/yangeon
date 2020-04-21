@@ -65,6 +65,10 @@ defmodule Yangeon.Grid do
     if has?(grid, neighbour_cell), do: neighbour_cell, else: nil
   end
 
+  def neighbour?(%Grid{} = grid, %Cell{} = cell, %Cell{} = other_cell) do
+    other_cell in conns(grid, cell)
+  end
+
   defp add_one_dir_conn(%Grid{} = grid, %Cell{} = cell1, %Cell{} = cell2) do
     cell1_new_conns =
       grid.conns

@@ -1,9 +1,9 @@
-defmodule Yangeon.Visualize.BoardTest do
+defmodule YangeonWeb.Visualize.BoardTest do
   use ExUnit.Case
 
   alias Yangeon.Parser
-  alias Yangeon.Visualize.Board
-  alias Yangeon.Visualize.Opts
+  alias YangeonWeb.Visualize.Board
+  alias YangeonWeb.Visualize.Opts
 
 
   setup do
