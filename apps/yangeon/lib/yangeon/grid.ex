@@ -10,11 +10,12 @@ defmodule Yangeon.Grid do
   alias Yangeon.Grid
   alias Yangeon.Cell
 
-  def new(rows, cols) do
+  def new(rows, cols, braid_level \\ 0.0) do
     grid =
       %Grid{rows: rows, cols: cols}
       |> generate_rectangular_grid()
       |> generate_maze()
+      |> braid(braid_level)
   end
 
   def cells(%Grid{} = grid) do
@@ -130,7 +131,7 @@ defmodule Yangeon.Grid do
     end
   end
 
-  def generate_rectangular_grid(%Grid{rows: rows, cols: cols} = grid) do
+  defp generate_rectangular_grid(%Grid{rows: rows, cols: cols} = grid) do
     cells = for r <- 0..rows-1, c <- 0..cols-1 do
       Cell.new(r, c)
     end
@@ -146,42 +147,51 @@ defmodule Yangeon.Grid do
     end)
   end
 
+  def link_count(%Grid{} = grid, %Cell{} = cell) do
+    grid
+    |> links(cell)
+    |> Enum.count()
+  end
+
+  def deadends(%Grid{} = grid) do
+    grid
+    |> cells()
+    |> Enum.filter(fn cell ->
+      link_count(grid, cell) == 1
+    end)
+  end
+
+  def braid(%Grid{} = grid, p \\ 1.0) do
+    grid
+    |> deadends()
+    |> Enum.shuffle()
+    |> Enum.reduce(grid, fn cell, grid ->
+      if link_count(grid, cell) != 1 || :random.uniform() > p do
+        grid
+      else
+        neighbors =
+          conns(grid, cell)
+          |> Enum.reject(&linked?(grid, cell, &1))
+
+        best =
+          neighbors
+          |> Enum.filter(&link_count(grid, &1) == 1)
+
+        candidates = if Enum.empty?(best) do
+          neighbors
+        else
+          best
+        end
+
+        neighbor =
+          candidates
+          |> Enum.shuffle()
+          |> hd()
+
+        add_link(grid, cell, neighbor)
+      end
+    end)
+  end
+
 end
 
-# class RecursiveBacktracker
-
-#   def self.on(grid, start_at: grid.random_cell)
-#     stack = []
-#     stack.push start_at
-
-#     while stack.any?
-#       current = stack.last
-#       neighbors = current.neighbors.select { |n| n.links.empty? }
-
-#       if neighbors.empty?
-#         stack.pop
-#       else
-#         neighbor = neighbors.sample
-#         current.link(neighbor)
-#         stack.push(neighbor)
-#       end
-#     end
-
-#     grid
-#   end
-
-#   def self.recursively_on(grid, start_at: grid.random_cell)
-#     walk_from(start_at)
-#     grid
-#   end
-
-#   def self.walk_from(cell)
-#     cell.neighbors.shuffle.each do |neighbor|
-#       if neighbor.links.empty?
-#         cell.link(neighbor)
-#         walk_from(neighbor)
-#       end
-#     end
-#   end
-
-# end

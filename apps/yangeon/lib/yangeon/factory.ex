@@ -8,7 +8,7 @@ defmodule Yangeon.Factory do
     :random.seed(:erlang.phash2([node()]), :erlang.monotonic_time(), :erlang.unique_integer())
 
     {rows, cols} = game_opts.size
-    grid = Grid.new(rows, cols)
+    grid = Grid.new(rows, cols, game_opts.braid_level)
 
     Board.new(grid, game_opts)
   end
