@@ -46,8 +46,7 @@ defmodule YangeonWeb.MixProject do
       {:telemetry_poller, "~> 0.4"},
       {:yangeon, in_umbrella: true},
       {:jason, "~> 1.0"},
-      {:plug_cowboy, "~> 2.0"},
-      {:xml_builder, "~> 2.1.1"}
+      {:plug_cowboy, "~> 2.0"}
     ]
   end
 

@@ -24,7 +24,7 @@ defmodule Yangeon.Umbrella.MixProject do
   end
 
   defp deps do
-    []
+    [{:benchfella, "~> 0.3.0"}]
   end
 
   defp aliases do
