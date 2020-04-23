@@ -11,11 +11,16 @@ defmodule Yangeon.Grid do
   alias Yangeon.Cell
 
   def new(rows, cols) do
-    %Grid{rows: rows, cols: cols}
+    grid =
+      %Grid{rows: rows, cols: cols}
+      |> generate_rectangular_grid()
+      |> generate_maze()
   end
 
   def cells(%Grid{} = grid) do
-    Map.keys(grid.conns)
+    grid.conns
+    |> Map.keys()
+    |> MapSet.new()
   end
 
   @spec add_conn(Grid.t(), Cell.t(), Cell.t()) :: Grid.t()
@@ -41,6 +46,20 @@ defmodule Yangeon.Grid do
   def links(%Grid{} = grid, %Cell{} = cell) do
     grid.links
     |> Map.get(cell, MapSet.new())
+  end
+
+  def links(grid, cell, depth, found \\ MapSet.new())
+
+  def links(_grid, _cell, 0, found), do: found
+
+  def links(%Grid{} = grid, %Cell{} = cell, depth, found) when depth > 0 do
+    linked =
+      found
+      |> MapSet.put(cell)
+      |> Enum.map(fn c -> Grid.links(grid,c) |> MapSet.to_list() end)
+      |> List.flatten()
+      |> MapSet.new()
+    links(grid, cell, depth - 1, MapSet.union(found, linked))
   end
 
   def linked?(%Grid{} = grid, %Cell{} = cell, %Cell{} = other_cell) do
@@ -89,4 +108,80 @@ defmodule Yangeon.Grid do
     %Grid{grid | links: new_links}
   end
 
+  defp generate_maze(grid, stack \\ [Cell.new(0, 0)])
+
+  defp generate_maze(%Grid{} = grid, []) do
+    grid
+  end
+
+  defp generate_maze(%Grid{} = grid, [current | rest] = stack) do
+    neighbours =
+      conns(grid, current)
+      |> Enum.filter(fn cell -> links(grid, cell) |> Enum.empty?() end)
+
+    if Enum.empty?(neighbours) do
+      generate_maze(grid, rest)
+    else
+      neighbour =
+        neighbours
+        |> Enum.shuffle()
+        |> hd()
+        generate_maze(Grid.add_link(grid, current, neighbour), [neighbour | stack])
+    end
+  end
+
+  def generate_rectangular_grid(%Grid{rows: rows, cols: cols} = grid) do
+    cells = for r <- 0..rows-1, c <- 0..cols-1 do
+      Cell.new(r, c)
+    end
+
+    cells
+    |> Enum.reduce(grid, fn cell, grid ->
+      east_cell = if cell.col < cols - 1, do: [Cell.new(cell.row, cell.col + 1)], else: []
+      west_cell = if cell.row < rows - 1, do: [Cell.new(cell.row + 1, cell.col)], else: []
+      cells_to_conn = east_cell ++ west_cell
+      Enum.reduce(cells_to_conn, grid, fn cells_to_conn, grid ->
+        Grid.add_conn(grid, cell, cells_to_conn)
+      end)
+    end)
+  end
+
 end
+
+# class RecursiveBacktracker
+
+#   def self.on(grid, start_at: grid.random_cell)
+#     stack = []
+#     stack.push start_at
+
+#     while stack.any?
+#       current = stack.last
+#       neighbors = current.neighbors.select { |n| n.links.empty? }
+
+#       if neighbors.empty?
+#         stack.pop
+#       else
+#         neighbor = neighbors.sample
+#         current.link(neighbor)
+#         stack.push(neighbor)
+#       end
+#     end
+
+#     grid
+#   end
+
+#   def self.recursively_on(grid, start_at: grid.random_cell)
+#     walk_from(start_at)
+#     grid
+#   end
+
+#   def self.walk_from(cell)
+#     cell.neighbors.shuffle.each do |neighbor|
+#       if neighbor.links.empty?
+#         cell.link(neighbor)
+#         walk_from(neighbor)
+#       end
+#     end
+#   end
+
+# end

@@ -4,34 +4,8 @@ defmodule YangeonWeb.Visualize.Svg do
 
   alias YangeonWeb.Visualize.Opts
 
-  @xmlns "http://www.w3.org/2000/svg"
-  @xmlns_xlink "http://www.w3.org/1999/xlink"
-
-  @style """
-    .ra {
-      font-family: RPGAwesome;
-      -moz-osx-font-smoothing: grayscale;
-      -webkit-font-smoothing: antialiased;
-      font-style: normal;
-      font-variant: normal;
-      font-weight: normal;
-      line-height: 1;
-      speak: none;
-      text-transform: none;
-    }
-
-  """
-
-  def svg(%Opts{} = opts, {width, height}, elements) do
-    attrs = %{
-      "width" => width,
-      "height" => height,
-      "xmlns" => @xmlns,
-      "xmlns:xlink" => @xmlns_xlink,
-      "style" => "background:#{opts.background_color}"
-    }
-    element(:svg, attrs, [style(@style), elements])
-    |> generate()
+  def render(elements) do
+    elements |> generate()
   end
 
   def line(x1, y1, x2, y2, opts \\ [], elements \\ []) do
@@ -56,21 +30,53 @@ defmodule YangeonWeb.Visualize.Svg do
   @items %{
     player: %{
       symbol: "\uEA6F",
-      color: "#000"
+      color: "#000",
+      bage: false,
     },
     torch: %{
       symbol: "\uEAD1",
-      color: "#F55"
+      color: "#A00",
+      bage: true,
     },
     sword: %{
       symbol: "\uE946",
-      color: "#DAA520"
-    }
+      color: "#DAA520",
+      bage: true,
+    },
+    heart: %{
+      symbol: "\uE9F6",
+      color: "#600",
+      bage: true,
+    },
+    snake: %{
+      symbol: "\uEAA5",
+      color: "#0A0",
+      bage: true,
+    },
+    exit: %{
+      symbol: "\uEA01",
+      color: "#000",
+      bage: true,
+    },
   }
 
-  def ra_symbol(item, x, y, size) do
+  def ra_symbol(item, x, y, size, opts) do
     style = "font-size:#{size}px;fill:#{@items[item][:color]}"
-    text(x, y, @items[item][:symbol], "ra", style: style)
+    bage = if @items[item][:bage] do
+      element(
+        :circle,
+        %{
+          cx: x + div(size, 2),
+          cy: y - div(size, 2),
+          r: div(size, 2) + 4,
+          fill: opts.bage_fill,
+          stroke: opts.bage_stroke
+        }
+      )
+    else
+      []
+    end
+    [bage, text(x, y, @items[item][:symbol], "ra", style: style)]
   end
 
   defp make_attrs(opts, attrs) do

@@ -1,20 +1,41 @@
 defmodule Yangeon.Board.Items do
 
-  alias Yangeon.Board.Rooms
+  alias Yangeon.Board.Items
   alias Yangeon.Cell
+  alias Yangeon.Grid
 
 
-  def generate_not_in_rooms(count, rooms, size, generated \\ [])
+  defstruct [
+    grid: nil,
+    occupied: MapSet.new()
+  ]
 
-  def generate_not_in_rooms(0, _rooms, _size, generated), do: MapSet.new(generated)
-  def generate_not_in_rooms(count, rooms, {rows, cols}, generated) do
-    :random.seed(:erlang.phash2([node()]), :erlang.monotonic_time(), :erlang.unique_integer())
-    cell = Cell.new(:random.uniform(rows) - 1, :random.uniform(cols) - 1)
-    if Rooms.in_a_room?(rooms, cell) do
-      generate_not_in_rooms(count, rooms, {rows, cols}, generated)
-    else
-      generate_not_in_rooms(count - 1, rooms, {rows, cols}, [cell | generated])
-    end
+  def new(grid) do
+    %Items{grid: grid}
+  end
+
+  def generate(items) do
+    {new_items, generated} = generate(items, 1)
+    {new_items, generated |> MapSet.to_list() |> hd()}
+  end
+
+  def generate(%Items{grid: grid, occupied: occupied} = items, count) do
+    cells =
+      grid
+      |> Grid.cells()
+      |> MapSet.difference(occupied)
+      |> Enum.shuffle()
+      |> Enum.take(count)
+      |> MapSet.new()
+    {%Items{items | occupied: MapSet.union(occupied, cells)}, cells}
+  end
+
+  def occupied?(%Items{occupied: occupied}, %Cell{} = cell) do
+    cell in occupied
+  end
+
+  def occupy(%Items{occupied: occupied} = items, %Cell{} = cell) do
+    %Items{items | occupied: MapSet.put(occupied, cell)}
   end
 
 end

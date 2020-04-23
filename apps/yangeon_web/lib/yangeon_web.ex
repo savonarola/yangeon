@@ -83,6 +83,8 @@ defmodule YangeonWeb do
 
       import YangeonWeb.ErrorHelpers
       alias YangeonWeb.Router.Helpers, as: Routes
+      alias YangeonWeb.Visualize.Board, as: VBoard
+      alias Yangeon.Board.Player, as: Player
     end
   end
 
