@@ -20,6 +20,7 @@ defmodule Yangeon.Board do
     snake_with_key_loc: nil,
     snake_power: 0,
     exit_loc: Cell.new(0, 0),
+    items: nil,
     game_over: false,
     game_winned: false
   ]
@@ -51,6 +52,7 @@ defmodule Yangeon.Board do
       snake_power: game_opts.snake_power,
       snake_with_key_loc: snake_with_key_loc,
       exit_loc: exit_loc,
+      items: items,
     }
   end
 

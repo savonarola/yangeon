@@ -1,0 +1,6 @@
+apps/yangeon_web/assets/node_modules
+deps
+_build
+.elixir_ls
+config/docker.env
+

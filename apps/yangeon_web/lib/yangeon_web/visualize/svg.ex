@@ -2,8 +2,6 @@ defmodule YangeonWeb.Visualize.Svg do
 
   import XmlBuilder
 
-  alias YangeonWeb.Visualize.Opts
-
   def render(elements) do
     elements |> generate()
   end

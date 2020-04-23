@@ -11,11 +11,10 @@ defmodule Yangeon.Grid do
   alias Yangeon.Cell
 
   def new(rows, cols, braid_level \\ 0.0) do
-    grid =
-      %Grid{rows: rows, cols: cols}
-      |> generate_rectangular_grid()
-      |> generate_maze()
-      |> braid(braid_level)
+    %Grid{rows: rows, cols: cols}
+    |> generate_rectangular_grid()
+    |> generate_maze()
+    |> braid(braid_level)
   end
 
   def cells(%Grid{} = grid) do
