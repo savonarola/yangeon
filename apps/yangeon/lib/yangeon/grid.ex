@@ -23,14 +23,12 @@ defmodule Yangeon.Grid do
     |> MapSet.new()
   end
 
-  @spec add_conn(Grid.t(), Cell.t(), Cell.t()) :: Grid.t()
   def add_conn(%Grid{} = grid, %Cell{} = cell1, %Cell{} = cell2) do
     grid
     |> add_one_dir_conn(cell1, cell2)
     |> add_one_dir_conn(cell2, cell1)
   end
 
-  @spec add_link(Grid.t(), Cell.t(), Cell.t()) :: Grid.t()
   def add_link(%Grid{} = grid, %Cell{} = cell1, %Cell{} = cell2) do
     grid
     |> add_conn(cell1, cell2)

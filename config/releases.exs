@@ -17,6 +17,5 @@ config :yangeon_web, YangeonWeb.Endpoint,
     transport_options: [socket_opts: [:inet6]]
   ],
   secret_key_base: secret_key_base,
-  check_origin: ["http://localhost:4000"],
   code_reloader: false,
   server: true

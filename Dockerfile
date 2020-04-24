@@ -1,19 +1,23 @@
-FROM bitwalker/alpine-elixir-phoenix:latest
+FROM ubuntu:xenial
 
-ENV MIX_ENV=prod
+MAINTAINER Ilya Averyanov <av@rubybox.ru>
 
-ADD . /app
+ENV LANG=en_US.UTF-8
+
+RUN apt-get clean \
+    && apt-get update \
+    && apt-get install -y wget locales curl git unzip make gcc g++ \
+    && locale-gen $LANG \
+    && wget https://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb \
+    && dpkg -i erlang-solutions_1.0_all.deb \
+    && apt-get update \
+    && apt-get install -y erlang elixir \
+    && mix local.hex --force \
+    && mix local.rebar --force
+
+RUN curl -sL https://deb.nodesource.com/setup_13.x | bash -
+RUN apt-get install -y nodejs
+
+COPY . /app
 WORKDIR /app
-
-RUN mix do deps.get, compile
-
-RUN cd apps/yangeon_web/assets && \
-    npm install && \
-    npm run deploy
-
-RUN mix do phx.digest, release
-
-EXPOSE 4000
-
-CMD ["/app/_build/prod/rel/main/bin/main", "start"]
 

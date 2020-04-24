@@ -7,7 +7,6 @@ defmodule Yangeon.Cell do
 
   alias Yangeon.Cell
 
-  @spec new(integer, integer) :: Cell.t()
   def new(row, col) when is_integer(row) and is_integer(col) do
     %Cell{
       row: row,

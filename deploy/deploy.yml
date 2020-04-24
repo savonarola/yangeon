@@ -1,0 +1,28 @@
+- user: av
+  hosts: all
+  gather_facts: no
+  vars:
+    yangeon_dir: /home/av/yangeon
+    release_dir: "{{yangeon_dir}}/{{release_id}}"
+    secret_key_base: "{{secret_key_base}}"
+    current_dir: "{{yangeon_dir}}/current"
+
+
+  tasks:
+  - file: path={{release_dir}} state=directory
+
+  - unarchive: src=../prod.tar.gz dest={{release_dir}} creates=yes
+  - copy: src=../deploy dest={{release_dir}}
+
+  - file: src={{release_dir}} dest={{current_dir}} state=link
+
+  - template:
+      src: yangeon.service
+      dest: /etc/systemd/system/yangeon.service
+    become: yes
+
+  - shell: systemctl daemon-reload
+    become: yes
+
+  - shell: systemctl restart yangeon
+    become: yes

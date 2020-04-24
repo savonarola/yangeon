@@ -22,6 +22,16 @@ defmodule YangeonWeb.PageLive do
     |> assign(:board, board)
   end
 
+  defp render_dynamic_board_parts(socket, board) do
+    socket
+    |> assign(:board_dynamic, raw(VBoard.draw_dynamic(board)))
+    |> assign(:swords, board.player.swords)
+    |> assign(:hearts, board.player.hearts)
+    |> assign(:has_torch?, Player.has_torch?(board.player))
+    |> assign(:has_key?, Player.has_key?(board.player))
+    |> assign(:board, board)
+  end
+
   @impl true
   def mount(_params, _session, socket) do
     board = Factory.board()
@@ -31,7 +41,7 @@ defmodule YangeonWeb.PageLive do
   @impl true
   def handle_event("cell-click", %{"row" => row, "col" => col} = _params, socket) do
     new_board = Board.handle_event(socket.assigns.board, {:cell_click, String.to_integer(row), String.to_integer(col)})
-    {:noreply, render_board_parts(socket, new_board)}
+    {:noreply, render_dynamic_board_parts(socket, new_board)}
   end
 
   @key_events %{
@@ -55,7 +65,7 @@ defmodule YangeonWeb.PageLive do
       else
         socket.assigns.board
       end
-      {:noreply, render_board_parts(socket, new_board)}
+      {:noreply, render_dynamic_board_parts(socket, new_board)}
     end)
     Logger.debug("handle_event[key-pressed], sending reply in #{time/1_000}ms")
     reply

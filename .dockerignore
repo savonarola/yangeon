@@ -1,6 +1,7 @@
-apps/yangeon_web/assets/node_modules
-deps
+tmp
+log
+stages
 _build
-.elixir_ls
-config/docker.env
-
+deps
+apps/yangeon_web/assets/node_modules
+prod.tar.gz
