@@ -9,11 +9,11 @@ defmodule Yangeon.Board do
   defstruct [
     grid: nil,
     size: {0, 0},
+    game_opts: nil,
     player_loc: Cell.new(0, 0),
     visible_locs: MapSet.new(),
     player: nil,
     torch_locs: MapSet.new(),
-    torch_depth: 0,
     sword_locs: MapSet.new(),
     heart_locs: MapSet.new(),
     snake_locs: MapSet.new(),
@@ -40,12 +40,12 @@ defmodule Yangeon.Board do
 
     %Board{
       size: game_opts.size,
+      game_opts: game_opts,
       grid: grid,
       player_loc: player_loc,
       visible_locs: MapSet.new([player_loc]),
       player: Player.new(),
       torch_locs: torch_locs,
-      torch_depth: game_opts.torch_depth,
       sword_locs: sword_locs,
       heart_locs: heart_locs,
       snake_locs: snake_locs,
@@ -60,15 +60,23 @@ defmodule Yangeon.Board do
 
   def interact(%Board{} = board) do
     player_loc = board.player_loc
+    game_opts = board.game_opts
 
     player = board.player
 
+    player = Player.remove_torch(player)
+
     torch_locs = board.torch_locs
     {torch_locs, player} = if player_loc in torch_locs do
-      {MapSet.delete(torch_locs, player_loc), Player.add_torch(player)}
+      {MapSet.delete(torch_locs, player_loc), Player.add_torches(player, game_opts.torch_weight)}
     else
       {torch_locs, player}
     end
+
+    visible_locs = MapSet.union(
+      board.visible_locs,
+      Grid.links(board.grid, player_loc, torch_depth(board, player.torches))
+    )
 
     sword_locs = board.sword_locs
     {sword_locs, player} = if player_loc in sword_locs do
@@ -100,12 +108,6 @@ defmodule Yangeon.Board do
       {snake_locs, player}
     end
 
-    visible_locs = if Player.has_torch?(player) do
-      MapSet.union(board.visible_locs, Grid.links(board.grid, player_loc, board.torch_depth))
-    else
-      MapSet.put(board.visible_locs, player_loc)
-    end
-
     {game_over, game_winned} =
       cond do
         Player.dead?(player) -> {true, false}
@@ -124,6 +126,11 @@ defmodule Yangeon.Board do
       visible_locs: visible_locs,
       player: player
     }
+  end
+
+  defp torch_depth(%Board{} = board, torches) do
+    game_opts = board.game_opts
+    min(game_opts.max_torch_depth, div(game_opts.torch_weight + torches - 1, game_opts.torch_weight))
   end
 
   defp try_move_to(board, cell) do

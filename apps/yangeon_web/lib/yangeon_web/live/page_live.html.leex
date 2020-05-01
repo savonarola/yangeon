@@ -8,11 +8,9 @@
   <% else %>
     <i class="ra ra-sword"><%= @swords %></i>
     | <i class="ra ra-heart-bottle"><%= @hearts %></i>
+    | <i class="ra ra-torch"><%= @torches %></i>
     <%= if @has_key? do %>
       | <i class="ra ra-key"></i>
-    <% end %>
-    <%= if @has_torch? do %>
-      | <i class="ra ra-torch"></i>
     <% end %>
     <div phx-window-keydown="key-pressed">
       <svg height="<%= @board_height %>" style="<%= @board_svg_style %>" width="<%= @board_width %>" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">

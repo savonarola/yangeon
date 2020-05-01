@@ -4,7 +4,7 @@ defmodule Yangeon.Board.Player do
     swords: 0,
     hearts: 1,
     key: false,
-    torch: false,
+    torches: 0,
   ]
 
   alias Yangeon.Board.Player
@@ -25,8 +25,12 @@ defmodule Yangeon.Board.Player do
     %Player{player | key: true}
   end
 
-  def add_torch(%Player{} = player) do
-    %Player{player | torch: true}
+  def add_torches(%Player{} = player, amount) do
+    %Player{player | torches: player.torches + amount}
+  end
+
+  def remove_torch(%Player{} = player) do
+    %Player{player | torches: max(player.torches - 1, 0)}
   end
 
   def attacked(%Player{hearts: hearts, swords: swords} = player, power) do
@@ -38,8 +42,6 @@ defmodule Yangeon.Board.Player do
   end
 
   def has_key?(%Player{key: key}), do: key
-
-  def has_torch?(%Player{torch: torch}), do: torch
 
   def dead?(%Player{hearts: 0}), do: true
   def dead?(%Player{}), do: false

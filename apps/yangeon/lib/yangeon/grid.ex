@@ -48,7 +48,9 @@ defmodule Yangeon.Grid do
 
   def links(grid, cell, depth, found \\ MapSet.new())
 
-  def links(_grid, _cell, 0, found), do: found
+  def links(_grid, cell, 0, found) do
+    MapSet.put(found, cell)
+  end
 
   def links(%Grid{} = grid, %Cell{} = cell, depth, found) when depth > 0 do
     linked =

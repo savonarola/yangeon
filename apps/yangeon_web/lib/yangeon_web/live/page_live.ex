@@ -17,7 +17,7 @@ defmodule YangeonWeb.PageLive do
     |> assign(:board_events, raw(VBoard.draw_event_layer(board)))
     |> assign(:swords, board.player.swords)
     |> assign(:hearts, board.player.hearts)
-    |> assign(:has_torch?, Player.has_torch?(board.player))
+    |> assign(:torches, board.player.torches)
     |> assign(:has_key?, Player.has_key?(board.player))
     |> assign(:board, board)
   end
@@ -27,7 +27,7 @@ defmodule YangeonWeb.PageLive do
     |> assign(:board_dynamic, raw(VBoard.draw_dynamic(board)))
     |> assign(:swords, board.player.swords)
     |> assign(:hearts, board.player.hearts)
-    |> assign(:has_torch?, Player.has_torch?(board.player))
+    |> assign(:torches, board.player.torches)
     |> assign(:has_key?, Player.has_key?(board.player))
     |> assign(:board, board)
   end
