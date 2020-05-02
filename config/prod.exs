@@ -11,7 +11,12 @@ import Config
 # before starting your production server.
 config :yangeon_web, YangeonWeb.Endpoint,
   url: [host: "yangeon.rubybox.ru", scheme: "https", port: 443],
-  cache_static_manifest: "priv/static/cache_manifest.json"
+  cache_static_manifest: "priv/static/cache_manifest.json",
+  check_origin: [
+    "http://localhost:8000",
+    "https://yangeon.rubybox.ru",
+    "https://yangeon1.rubybox.ru"
+  ]
 
 # ## SSL Support
 #
@@ -48,5 +53,5 @@ config :yangeon_web, YangeonWeb.Endpoint,
 # Check `Plug.SSL` for all available options in `force_ssl`.
 
 # Do not print debug messages in production
-config :logger, level: :debug
+config :logger, level: :info
 

@@ -2,7 +2,7 @@ FROM ubuntu:xenial
 
 MAINTAINER Ilya Averyanov <av@rubybox.ru>
 
-ENV LANG=en_US.UTF-8
+ENV LANG=ru_RU.UTF-8
 
 RUN apt-get clean \
     && apt-get update \
@@ -21,3 +21,15 @@ RUN apt-get install -y nodejs
 COPY . /app
 WORKDIR /app
 
+ENV MIX_ENV=prod
+ENV PORT=8000
+EXPOSE 8000
+
+RUN mix deps.get
+RUN cd apps/yangeon_web/assets && npm install
+RUN mix deps.compile
+RUN cd apps/yangeon_web/assets && npm run deploy
+RUN mix phx.digest
+RUN mix release main --overwrite
+
+CMD ["_build/prod/rel/main/bin/main", "start"]
