@@ -6,3 +6,6 @@ deps
 apps/yangeon_web/assets/node_modules
 prod.tar.gz
 .elixir_ls
+erl_crash.dump
+Dockerfile
+Makefile

@@ -1,6 +1,4 @@
-FROM ubuntu:xenial
-
-MAINTAINER Ilya Averyanov <av@rubybox.ru>
+FROM ubuntu:xenial AS build
 
 ENV LANG=ru_RU.UTF-8
 
@@ -15,7 +13,7 @@ RUN apt-get clean \
     && mix local.hex --force \
     && mix local.rebar --force
 
-RUN curl -sL https://deb.nodesource.com/setup_13.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
 RUN apt-get install -y nodejs
 
 COPY . /app
@@ -32,4 +30,15 @@ RUN cd apps/yangeon_web/assets && npm run deploy
 RUN mix phx.digest
 RUN mix release main --overwrite
 
-CMD ["_build/prod/rel/main/bin/main", "start"]
+FROM ubuntu:xenial
+
+ENV LANG=ru_RU.UTF-8
+
+RUN apt-get clean \
+    && apt-get update \
+    && apt-get install -y locales openssl \
+    && locale-gen $LANG
+
+COPY --from=build /app/_build/prod/rel/main/ /app
+
+CMD ["app/bin/main", "start"]
