@@ -1,19 +1,11 @@
-FROM ubuntu:xenial AS build
+FROM elixir:1.11 AS build
 
 ENV LANG=ru_RU.UTF-8
 
-RUN apt-get clean \
-    && apt-get update \
-    && apt-get install -y wget locales curl git unzip make gcc g++ \
-    && locale-gen $LANG \
-    && wget https://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb \
-    && dpkg -i erlang-solutions_1.0_all.deb \
-    && apt-get update \
-    && apt-get install -y erlang elixir \
-    && mix local.hex --force \
+RUN mix local.hex --force \
     && mix local.rebar --force
 
-RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
 RUN apt-get install -y nodejs
 
 COPY . /app
@@ -26,11 +18,11 @@ EXPOSE 8000
 RUN mix deps.get
 RUN cd apps/yangeon_web/assets && npm install
 RUN mix deps.compile
-RUN cd apps/yangeon_web/assets && npm run deploy
+RUN cd apps/yangeon_web/assets && node_modules/esbuild/bin/esbuild js/app.js --bundle --loader:.js=jsx --loader:.eot=copy --loader:.svg=copy --loader:.ttf=copy --loader:.woff2=copy --loader:.woff=copy --outfile=../priv/static/js/app.js
 RUN mix phx.digest
 RUN mix release main --overwrite
 
-FROM ubuntu:xenial
+FROM ubuntu:focal
 
 ENV LANG=ru_RU.UTF-8
 

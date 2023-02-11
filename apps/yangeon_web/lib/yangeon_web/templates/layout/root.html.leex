@@ -10,7 +10,7 @@
     <meta name="twitter:creator" content="@motonarola" />
     <meta property="og:title" content="Yangeon Game" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://yangeon.rubybox.ru" />
+    <meta property="og:url" content="https://yangeon.rubybox.dev" />
     <meta property="og:image" content="<%= Routes.static_url(@conn, "/images/maze.png") %>" />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="101" />
@@ -19,7 +19,7 @@
 
     <%= csrf_meta_tag() %>
     <%= live_title_tag assigns[:page_title] || "Yangeon" %>
-    <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
+    <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/js/app.css") %>"/>
     <script defer type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
     <!-- Yandex.Metrika counter -->
     <script type="text/javascript" >

@@ -11,3 +11,6 @@ push: tag
 
 run: build
 	docker run -p 4000:4000 --env-file config/docker.env yangeon
+
+deploy: push
+	ssh rubybox.dev microk8s.kubectl rollout restart deployment/yangeon-web

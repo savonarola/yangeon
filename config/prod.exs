@@ -10,12 +10,13 @@ import Config
 # which you should run after static files are built and
 # before starting your production server.
 config :yangeon_web, YangeonWeb.Endpoint,
-  url: [host: "yangeon.rubybox.ru", scheme: "https", port: 443],
+  url: [host: "yangeon.rubybox.dev", scheme: "https", port: 443],
   cache_static_manifest: "priv/static/cache_manifest.json",
   check_origin: [
     "http://localhost:8000",
-    "https://yangeon.rubybox.ru",
-    "https://yangeon1.rubybox.ru"
+    "http://localhost:4000",
+    "https://yangeon.rubybox.dev",
+    "https://yangeon1.rubybox.dev"
   ]
 
 # ## SSL Support
